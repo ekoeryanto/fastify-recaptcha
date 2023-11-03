@@ -34,7 +34,14 @@ function httpsRequest(params, postData) {
     });
 }
 async function fastify_recaptcha(fastify, options) {
-    fastify.decorateRequest('recaptcha', null);
+    const $rec = {
+        recaptcha: null
+    };
+    if (!options.reply) {
+        fastify.decorateRequest('recaptcha', {
+            getter: () => $rec.recaptcha,
+        });
+    }
     if (typeof options.recaptcha_secret_key !== "string") {
         console.error("recaptcha_secret_key is not found");
         throw new Error("recaptcha_secret_key is not found");
@@ -57,7 +64,7 @@ async function fastify_recaptcha(fastify, options) {
                     }
                 }
                 else {
-                    request.recaptcha = x;
+                    $rec.recaptcha = x;
                 }
             }
             catch (err) {
